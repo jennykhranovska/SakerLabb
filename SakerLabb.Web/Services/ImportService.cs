@@ -6,58 +6,62 @@ namespace SakerLabb.Web.Services;
 
 public class ImportService
 {
-    private readonly ILogger<ImportService> _logger;
-    private readonly HttpClient _http;
+  private readonly ILogger<ImportService> _logger;
+  private readonly HttpClient _http;
 
-    public ImportService(ILogger<ImportService> logger, HttpClient http)
+  public ImportService(ILogger<ImportService> logger, HttpClient http)
+  {
+    _logger = logger;
+    _http = http;
+  }
+
+  public string ImportXml(string xml)
+  {
+    var settings = new XmlReaderSettings
     {
-        _logger = logger;
-        _http = http;
-    }
+      DtdProcessing = DtdProcessing.Prohibit,
+      XmlResolver = null
+    };
 
-    public string ImportXml(string xml)
+    var document = new XmlDocument
     {
-        var settings = new XmlReaderSettings
-        {
-            DtdProcessing = DtdProcessing.Parse,
-            XmlResolver = new XmlUrlResolver()
-        };
+      XmlResolver = null
+    };
 
-        var document = new XmlDocument { XmlResolver = new XmlUrlResolver() };
-        using var reader = XmlReader.Create(new StringReader(xml), settings);
-        document.Load(reader);
+    using var reader = XmlReader.Create(new StringReader(xml), settings);
+    document.Load(reader);
 
-        return document.DocumentElement?.InnerText ?? "";
-    }
+    return document.DocumentElement?.InnerText ?? "";
+  }
 
-    public object? ImportJson(string json)
+  public object? ImportJson(string json)
+  {
+    var settings = new JsonSerializerSettings
     {
-        var settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All
-        };
+      TypeNameHandling = TypeNameHandling.All
+    };
 
-        return JsonConvert.DeserializeObject(json, settings);
-    }
+    return JsonConvert.DeserializeObject(json, settings);
+  }
 
-    public async Task<string> FetchRemote(string url)
-    {
-        _logger.LogInformation("Hämtar fjärresurs {Url}", url);
-        var response = await _http.GetAsync(url);
-        return await response.Content.ReadAsStringAsync();
-    }
+  public async Task<string> FetchRemote(string url)
+  {
+    _logger.LogInformation("Hämtar fjärresurs {Url}", url);
+    var response = await _http.GetAsync(url);
+    return await response.Content.ReadAsStringAsync();
+  }
 
- public string Ping(string host)
-{
+  public string Ping(string host)
+  {
     var process = new Process
     {
-        StartInfo = new ProcessStartInfo
-        {
-            FileName = "ping",
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        }
+      StartInfo = new ProcessStartInfo
+      {
+        FileName = "ping",
+        RedirectStandardOutput = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+      }
     };
 
     process.StartInfo.ArgumentList.Add("-n");
@@ -68,5 +72,5 @@ public class ImportService
     var output = process.StandardOutput.ReadToEnd();
     process.WaitForExit(5000);
     return output;
-}
+  }
 }
