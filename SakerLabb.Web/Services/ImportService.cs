@@ -47,23 +47,26 @@ public class ImportService
         return await response.Content.ReadAsStringAsync();
     }
 
-    public string Ping(string host)
+ public string Ping(string host)
+{
+    var process = new Process
     {
-        var process = new Process
+        StartInfo = new ProcessStartInfo
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = "/c ping -n 2 " + host,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
-        };
+            FileName = "ping",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        }
+    };
 
-        process.Start();
-        var output = process.StandardOutput.ReadToEnd();
-        process.WaitForExit(5000);
-        return output;
-    }
+    process.StartInfo.ArgumentList.Add("-n");
+    process.StartInfo.ArgumentList.Add("2");
+    process.StartInfo.ArgumentList.Add(host);
+
+    process.Start();
+    var output = process.StandardOutput.ReadToEnd();
+    process.WaitForExit(5000);
+    return output;
+}
 }
