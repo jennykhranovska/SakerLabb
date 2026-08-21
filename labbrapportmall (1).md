@@ -23,11 +23,11 @@ Fyll i tabellen. Minst ett fynd ska komma från statisk analys (CodeQL) och mins
 
 | Nr | Källa (CodeQL/ZAP) | Regel-id eller alert | Allvarlighet (+ confidence för ZAP) | Fil och rad eller URL | Verkligt eller falskt positivt | Motivering (2–4 meningar) |
 |----|--------------------|----------------------|-------------------------------------|-----------------------|--------------------------------|---------------------------|
-| 1 |  |  |  |  |  |  |
-| 2 |  |  |  |  |  |  |
-| 3 |  |  |  |  |  |  |
-| 4 |  |  |  |  |  |  |
-| 5 |  |  |  |  |  |  |
+| 1 | CodeQL|  cs/xml/insecure-dtd-handling| Critical | SakerLabb.Web/Services/ImportService.cs, rad 27 | Verkligt | Fyndet är verkligt eftersom appen tar emot XML från användaren och läser den utan tillräckligt skydd. XML-läsaren har inställningar som kan göra det möjligt att läsa osäkert innehåll.|
+| 2 | CodeQL | cs/command-line-injection |Critical  | SakerLabb.Web/Services/ImportService.cs, rad 57 |  Verkligt|  |Användaren kan skriva in ett värde som sparas i host. Appen använder sedan värdet direkt i ett kommando utan att kontrollera det först.  
+| 3 | ZAP | Content Security Policy (CSP) Header Not Set |Medium, Confidence: High  | http://localhost:5080/ | Verkligt | Fyndet är verkligt eftersom jag kontrollerade Response i ZAP och såg att Content-Security-Policy saknas. Det betyder att appen saknar detta säkerhetsskydd.|
+| 4 | ZAP |Missing Anti-clickjacking Header  | Medium, Confidence: Medium | http://localhost:5080/ | Verkligt | Jag kontrollerade Response i ZAP och såg att X-Frame-Options saknas. Det betyder att appen saknar skydd mot clickjacking. |
+| 5 |ZAP|Absence of Anti-CSRF Tokens | Medium, Confidence: Low|  | http://localhost:5080/tickets/6 | Verkligt |Jag kontrollerade formuläret i TicketDetail.razor och såg att det skickar POST-data utan någon Anti-CSRF-token.
 
 Bevis (skärmbilder eller utdrag), numrerade efter fyndet ovan:
 
