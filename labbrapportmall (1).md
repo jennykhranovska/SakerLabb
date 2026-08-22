@@ -2,10 +2,10 @@
 
 *Kunskapskontroll 2, IT-säkerhet för utvecklare. Fyll i mallen och lämna in som PDF tillsammans med länken till ditt repo. Riktlängd två till tre sidor.*
 
-**Namn:**
-**Datum:**
-**Repo (länk till din fork):**
-**Applikation som analyserades:**
+**Namn: Jenny Khranovska 
+**Datum:2026-08-21
+**Repo (länk till din fork): https://github.com/jennykhranovska/SakerLabb
+**Applikation som analyserades:** SakerLabb Support
 
 ---
 
@@ -44,7 +44,6 @@ Fynd 5: Se bilaga Fynd5-ZAP-AntiCSRF-Fore.png
 
 Rangordna fynden och motivera ordningen med allvarlighetsgrad, exponering och utnyttjbarhet. Vilket tar du först och varför?
 
-*Skriv här.*
 
 Jag tar Uncontrolled command line först. Det är Critical och användarens text kan hamna i ett kommando som körs på servern. En angripare kan därför försöka få servern att göra något annat än det som var tänkt. Därför bedömer jag att risken är hög.
 
