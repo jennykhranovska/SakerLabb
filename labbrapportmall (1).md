@@ -77,38 +77,6 @@ Fynd: Fynd 1 – cs/command-line-injection
 
 Plats: SakerLabb.Web/Services/ImportService.cs, rad 57
 
-Bevis före: Skärmbild från CodeQL på main som visar fyndet
-Untrusted XML is read insecurely med allvarlighetsgrad Critical.
-
-Bedömning: Verkligt. Applikationen tar emot XML från användaren och
-
-         XML-läsaren tillät osäker DTD-hantering. Det kunde göra att
-
-         osäkert externt XML-innehåll behandlades.
-
-Åtgärd: Ändrade XML-hanteringen så att DTD inte längre behandlas
-
-         osäkert och extern XML-resolver inte används.
-
-         Commit: 88eeef3 – "Åtgärda osäker XML-hantering"
-
-Bevis efter: Ny CodeQL-körning genomfördes efter rättningen på branchen
-
-         jenny-sakerhetsanalys. Det tidigare fyndet cs/xml/insecure-dtd-handling
-
-         rapporterades inte på den åtgärdade branchen. Den ursprungliga
-
-         alerten finns fortfarande kvar på main eftersom rättningen
-
-         gjordes på min egen branch.
-
-### Åtgärd 2
-
-
-Fynd: Fynd 2 – cs/xml/insecure-dtd-handling
-
-Plats: SakerLabb.Web/Services/ImportService.cs, rad 27
-
 Bevis före: Skärmbild från CodeQL på main som visar fyndet Uncontrolled command line med allvarlighetsgrad Critical.
 
 Bedömning: Verkligt. Användaren kan ange ett värde som används som host. Värdet användes direkt för att bygga ett kommando, vilket gjorde command injection möjlig.
@@ -118,6 +86,22 @@ Bedömning: Verkligt. Användaren kan ange ett värde som används som host. Vä
 Commit: 9e68c04 – "Åtgärda command line injection"
 
 Bevis efter: Ny CodeQL-körning genomfördes efter rättningen på branchen jenny-sakerhetsanalys. Det tidigare fyndet cs/command-line-injection rapporterades inte på den åtgärdade branchen. Den ursprungliga alerten #14 ligger fortfarande kvar som Open på main eftersom rättningen gjordes på min separata arbetsbranch.
+
+### Åtgärd 2
+
+Fynd: Fynd 2 – cs/xml/insecure-dtd-handling
+
+Plats: SakerLabb.Web/Services/ImportService.cs, rad 27
+
+Bevis före: Skärmbild från CodeQL på main som visar fyndet Untrusted XML is read insecurely med allvarlighetsgrad Critical.
+
+Bedömning: Verkligt. Applikationen tar emot XML från användaren och XML-läsaren tillät osäker DTD-hantering. Det kunde göra att osäkert externt XML-innehåll behandlades.
+
+Åtgärd: Ändrade XML-hanteringen så att DTD inte längre behandlas osäkert och extern XML-resolver inte används.
+
+Commit: 88eeef3 – "Åtgärda osäker XML-hantering"
+
+Bevis efter: Ny CodeQL-körning genomfördes efter rättningen på branchen jenny-sakerhetsanalys. Det tidigare fyndet cs/xml/insecure-dtd-handling rapporterades inte på den åtgärdade branchen. Den ursprungliga alerten finns fortfarande kvar på main eftersom rättningen gjordes på min egen branch.
 
 
 ### Åtgärd 3
