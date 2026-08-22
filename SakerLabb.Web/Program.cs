@@ -19,10 +19,10 @@ builder.Services.AddSingleton<FileService>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy => policy
-        .AllowAnyOrigin()
-        .AllowAnyHeader()
-        .AllowAnyMethod());
+  options.AddDefaultPolicy(policy => policy
+      .AllowAnyOrigin()
+      .AllowAnyHeader()
+      .AllowAnyMethod());
 });
 
 var app = builder.Build();
@@ -34,9 +34,11 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 
 app.Use(async (context, next) =>
 {
-    context.Response.Headers["X-Powered-By"] = "SakerLabb 1.4.2 (ASP.NET Core 10.0)";
-    context.Response.Headers["X-Backend-Node"] = Environment.MachineName;
-    await next();
+  context.Response.Headers["X-Powered-By"] = "SakerLabb 1.4.2 (ASP.NET Core 10.0)";
+  context.Response.Headers["X-Backend-Node"] = Environment.MachineName;
+  context.Response.Headers["X-Frame-Options"] = "DENY";
+
+  await next();
 });
 
 app.UseCors();
@@ -44,8 +46,8 @@ app.UseCors();
 app.UseStaticFiles();
 app.UseDirectoryBrowser(new DirectoryBrowserOptions
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.WebRootPath, "files")),
-    RequestPath = "/files"
+  FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.WebRootPath, "files")),
+  RequestPath = "/files"
 });
 
 app.UseAntiforgery();
