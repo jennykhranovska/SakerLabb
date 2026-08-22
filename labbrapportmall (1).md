@@ -13,7 +13,7 @@
 
 Beskriv i några meningar vilken app du analyserade, vad den gör och hur du genomförde analysen. Ange vilka verktyg du använde och hur du körde dem (CodeQL default setup med språk C#, ZAP passiv och aktiv skanning mot vilken adress).
 
-*Skriv här.*
+Jag analyserade SakerLabb Support, en .NET-applikation för hantering av supportärenden. Jag använde CodeQL med default setup och språket C# för statisk analys av koden. För dynamisk analys använde jag OWASP ZAP och gjorde en passiv skanning genom att köra applikationen lokalt på http://localhost:5080 och surfa i den genom ZAP proxy. Jag använde sedan samma verktyg igen för att verifiera de åtgärder jag gjort.
 
 ---
 
@@ -61,35 +61,64 @@ Använd mönstret nedan per åtgärdat fynd. Varje åtgärd ska gå att spåra t
 
 ### Åtgärd 1
 
-```
-Fynd:        (nr och regel-id/alert från tabellen ovan)
-Plats:       (fil och rad, eller URL)
-Bevis före:  (skärmbild eller rapportutdrag som visar fyndet)
-Bedömning:   (verkligt eller falskt positivt, kort motiverat)
-Åtgärd:      (vad du ändrade, med commit-hash)
-Bevis efter: (ny körning: CodeQL-alerten står som Fixed, eller ZAP-larmet är borta ur den nya rapporten)
+Fynd:        Fynd 2 – cs/command-line-injection
+
+Plats:       SakerLabb.Web/Services/ImportService.cs, rad 57
+
+Bevis före:  Skärmbild från CodeQL som visar fyndet
+             cs/command-line-injection som Critical.
+
+Bedömning:   Verkligt. Användaren kan ange ett värde som används som host.
+             Värdet användes direkt för att bygga ett kommando, vilket
+             gjorde command injection möjlig.
+
+Åtgärd:      Ändrade Ping så att användarens indata inte längre sätts ihop
+             till ett kommando som körs via cmd.exe.
+             Commit: 9e68c04 – "Åtgärda command line injection"
+
+Bevis efter: Ny CodeQL-körning efter rättningen visade att alerten var
+             åtgärdad/Closed. Skärmbild från den nya CodeQL-körningen.
 ```
 
 ### Åtgärd 2
 
 ```
-Fynd:
-Plats:
-Bevis före:
-Bedömning:
-Åtgärd:
-Bevis efter:
+### Åtgärd 2
+
+Fynd:        Fynd 1 – cs/xml/insecure-dtd-handling
+
+Plats:       SakerLabb.Web/Services/ImportService.cs, rad 27
+
+Bevis före:  Skärmbild från CodeQL som visar fyndet
+             cs/xml/insecure-dtd-handling som Critical.
+
+Bedömning:   Verkligt. Applikationen tar emot XML från användaren och
+             XML-läsaren tillät osäker DTD-hantering. Det kunde göra att
+             osäkert externt XML-innehåll behandlades.
+
+Åtgärd:      Ändrade XML-hanteringen så att DTD inte längre behandlas
+             osäkert och extern XML-resolver inte används.
+             Commit: 88eeef3 – "Åtgärda osäker XML-hantering"
+
+Bevis efter: Ny CodeQL-körning efter rättningen visade att alerten var
+             åtgärdad/Closed. Skärmbild från den nya CodeQL-körningen.
 ```
 
+```
 ### Åtgärd 3
 
-```
-Fynd:
-Plats:
-Bevis före:
-Bedömning:
-Åtgärd:
-Bevis efter:
+Fynd:        Fynd 4 – Missing Anti-clickjacking Header
+
+Plats:       http://localhost:5080/login
+
+Bevis före:  Skärmbild från ZAP som visar fyndet.
+
+Bedömning:   Verkligt. Appen saknade X-Frame-Options och hade därför inget skydd mot clickjacking.
+
+Åtgärd:      Lade till X-Frame-Options med värdet DENY i Program.cs.
+             Commit: [läggs till efter commit]
+
+Bevis efter: Ny körning i ZAP visar att X-Frame-Options: DENY skickas i svaret.
 ```
 
 ---
@@ -98,4 +127,12 @@ Bevis efter:
 
 Om du valt att inte åtgärda ett fynd, skriv ned tre saker per bortval: risken, motivet och den kompenserande kontrollen. Sätt gärna ett datum för omprövning.
 
-*Skriv här, eller skriv "inga bortval".*
+Fynd 3 – Content Security Policy (CSP) Header Not Set
+Risk: Utan CSP finns ett sämre skydd mot exempelvis skadligt innehåll som körs i webbläsaren.
+Motiv: Jag valde att prioritera andra fynd som var enklare att åtgärda och verifiera tydligt i laborationen.
+Kompenserande kontroll: Anti-clickjacking-skydd har lagts till med X-Frame-Options: DENY.
+
+Fynd 5 – Absence of Anti-CSRF Tokens
+Risk: En angripare kan försöka få en inloggad användare att skicka en oönskad begäran till applikationen.
+Motiv: Jag försökte åtgärda fyndet genom att lägga till CSRF-skydd. Projektet byggde utan fel, men åtgärden kunde inte verifieras ordentligt med ZAP eftersom den lokala databasen saknade tickets att testa mot. Därför valde jag att inte använda fyndet som en av de tre verifierade åtgärderna.
+Kompenserande kontroll: Åtgärden med antiforgery-skydd finns i koden, men fyndet bör testas och verifieras igen när det finns testdata.
