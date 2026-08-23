@@ -13,8 +13,10 @@
 
 Beskriv i några meningar vilken app du analyserade, vad den gör och hur du genomförde analysen. Ange vilka verktyg du använde och hur du körde dem (CodeQL default setup med språk C#, ZAP passiv och aktiv skanning mot vilken adress).
 
-Jag analyserade SakerLabb Support, en .NET-applikation för hantering av supportärenden. Jag använde CodeQL med default setup och språket C# för statisk analys av koden. För dynamisk analys använde jag OWASP ZAP och gjorde en passiv skanning genom att köra applikationen lokalt på http://localhost:5080 och surfa i den genom ZAP proxy. Jag använde sedan samma verktyg igen för att verifiera de åtgärder jag gjort.
+Jag analyserade SakerLabb Support, en .NET-applikation för hantering av supportärenden. Jag använde CodeQL med default setup och språket C# för statisk analys av koden. För dynamisk analys använde jag OWASP ZAP och gjorde både en passiv och en aktiv skanning mot applikationen som kördes lokalt på http://localhost:5080 och surfade i den genom ZAP proxy. Den aktiva skanningen identifierade bland annat möjliga sårbarheter för Cross-Site Scripting (XSS) och SQL Injection. Jag använde sedan samma verktyg igen för att verifiera de åtgärder jag gjort.
 
+Aktiv skanning – XSS: Se bilaga bilder/ZAP-XSS-Active.png
+Aktiv skanning – SQL Injection: Se bilaga bilder/ZAP-SQLInjection-Active.png
 ---
 
 ## 2. Fem fynd
@@ -115,7 +117,7 @@ Bevis före:  Skärmbild från ZAP som visar fyndet.
 Bedömning:   Verkligt. Appen saknade X-Frame-Options och hade därför inget skydd mot clickjacking.
 
 Åtgärd:      Lade till X-Frame-Options med värdet DENY i Program.cs.
-Commit: 8c08f1e – "Lägg till skydd mot clickjacking"
+Commit:      8c08f1e Åtgärda saknat anti-clickjacking-skydd
 
 Bevis efter: Ny körning i ZAP visar att X-Frame-Options: DENY skickas i svaret.
 
@@ -128,7 +130,7 @@ Om du valt att inte åtgärda ett fynd, skriv ned tre saker per bortval: risken,
 Fynd 3 – Content Security Policy (CSP) Header Not Set
 Risk: Utan CSP finns ett sämre skydd mot exempelvis skadligt innehåll som körs i webbläsaren.
 Motiv: Jag valde att prioritera andra fynd som var enklare att åtgärda och verifiera tydligt i laborationen.
-Kompenserande kontroll: Anti-clickjacking-skydd har lagts till med X-Frame-Options: DENY.
+Applikationen körs endast lokalt i laborationsmiljön och exponeras inte publikt.
 
 Fynd 5 – Absence of Anti-CSRF Tokens
 Risk: En angripare kan försöka få en inloggad användare att skicka en oönskad begäran till applikationen.
